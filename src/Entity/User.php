@@ -2,13 +2,16 @@
 
 namespace App\Entity;
 
+use App\Entity\DTO\CreateUserDTO;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JsonSerializable;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
  */
-class User
+class User implements JsonSerializable, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
@@ -33,18 +36,18 @@ class User
     private $password;
 
     /**
-     * @ORM\Column(type="datetime_immutable")
+     * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $updatedAt;
 
     public function __construct()
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->createdAt = new \DateTime();
     }
 
     public function getId(): ?int
@@ -88,27 +91,53 @@ class User
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    public function setCreatedAt(\DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeImmutable
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    public function setUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    /**
+     * @link https://www.php.net/manual/ru/jsonserializable.jsonserialize.php
+     * @return null[]|string[]
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            "username" => $this->getUsername(),
+            "email" => $this->getEmail()
+        ];
+    }
+
+    /**
+     * @param CreateUserDTO $dto
+     * @return static
+     */
+    public static function buildFromDTO(CreateUserDTO $dto): self
+    {
+        $user = new self();
+        $user->setEmail($dto->getEmail());
+        $user->setPassword($dto->getPassword());
+        $user->setUsername($dto->getUsername());
+
+        return $user;
     }
 }
