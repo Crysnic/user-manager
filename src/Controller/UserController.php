@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Controller\Validator\CreateUserValidator;
+use App\Controller\Validator\SearchUserValidator;
 use App\Controller\Validator\UpdateUserValidator;
 use App\Exception\CreateUserException;
+use App\Exception\SearchUserException;
 use App\Exception\UpdateUserException;
 use App\Service\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -57,10 +59,10 @@ class UserController extends AbstractController
     public function updateUser(Request $request, UpdateUserValidator $validator, int $id): JsonResponse
     {
         try {
-            $userDTO = $validator->deserialize($request, $id);
-            $validator->validate($userDTO);
+            $dto = $validator->deserialize($request, $id);
+            $validator->validate($dto);
 
-            $this->userService->update($userDTO);
+            $this->userService->update($dto);
         } catch (UpdateUserException $e) {
             return $this->json($e->getMessage(), $e->getCode());
         }
@@ -71,10 +73,17 @@ class UserController extends AbstractController
     /**
      * @Route("/api/users/search", name="users_search", methods={"GET"})
      */
-    public function searchUsers(Request $request): JsonResponse
+    public function searchUsers(Request $request, SearchUserValidator $validator): JsonResponse
     {
-        return $this->json(
-            $this->userService->findAll()
-        );
+        try {
+            $searchDTO = $validator->deserialize($request);
+            $validator->validate($searchDTO);
+
+            return $this->json(
+                $this->userService->search($searchDTO)
+            );
+        } catch (SearchUserException $e) {
+            return $this->json($e->getMessage(), $e->getCode());
+        }
     }
 }

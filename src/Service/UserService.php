@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Entity\DTO\CreateUserDTO;
+use App\Entity\DTO\SearchUserDTO;
 use App\Entity\DTO\UpdateUserDTO;
 use App\Entity\User;
 use App\Exception\CreateUserException;
+use App\Exception\SearchUserException;
 use App\Exception\UpdateUserException;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -104,5 +106,29 @@ class UserService implements UserServiceInterface
         }
 
         $this->userRepository->update($user);
+    }
+
+    /**
+     * @param SearchUserDTO $dto
+     * @return User[]
+     * @throws SearchUserException
+     */
+    public function search(SearchUserDTO $dto): array
+    {
+        if ($dto->getEmail() !== null) {
+            $user = $this->userRepository->findOneByEmail($dto->getEmail());
+            if ($user === null) {
+                throw new SearchUserException('User not found', 404);
+            }
+            return [$user];
+        } elseif ($dto->getUsername() !== null) {
+            $users = $this->userRepository->findByUsername($dto->getUsername());
+            if (empty($users)) {
+                throw new SearchUserException('Users not found', 404);
+            }
+            return $users;
+        } else {
+            throw new SearchUserException('Criteria for search not found', 404);
+        }
     }
 }
