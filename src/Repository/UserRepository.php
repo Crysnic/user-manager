@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +18,31 @@ class UserRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
+    }
+
+    /**
+     * @param User $user
+     * @return User
+     *
+     * @throws UniqueConstraintViolationException
+     */
+    public function save(User $user): User
+    {
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
+
+        return $user;
+    }
+
+    /**
+     * @param User $user
+     * @return User
+     */
+    public function update(User $user): User
+    {
+        $this->getEntityManager()->flush();
+
+        return $user;
     }
 
     // /**

@@ -12,7 +12,7 @@ class CreateUserDTO
      * @Assert\NotBlank(message="email - required field")
      * @Assert\Email(message="The email <{{ value }}> is not a valid")
      *
-     * @param string
+     * @var string
      */
     private $email;
 
@@ -27,7 +27,7 @@ class CreateUserDTO
      * )
      * @Assert\Regex(pattern="/^[a-zA-Z_ ]+$/", message="Your username must contain only latin characters")
      *
-     * @param string
+     * @var string
      */
     private $username;
 
@@ -46,7 +46,7 @@ class CreateUserDTO
      * @Assert\Regex(pattern="/[A-Z]/", message="Your password must contain at least one letter in upper case")
      * @Assert\Regex(pattern="/^[A-Za-z0-9!$_\&\*~\^]+$/", message="Your password must contain only letters, numbers and !$_*~^")
      *
-     * @param string
+     * @var string
      */
     private $password;
 
@@ -55,7 +55,7 @@ class CreateUserDTO
      * @Assert\Type(type="string", message="repeatPassword must be a {{ type }}")
      * @Assert\EqualTo(propertyPath="password", message="repeatPassword must be equals to password")
      *
-     * @param string
+     * @var string
      */
     private $repeatPassword;
 

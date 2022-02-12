@@ -122,22 +122,9 @@ class User implements JsonSerializable, PasswordAuthenticatedUserInterface
     public function jsonSerialize(): array
     {
         return [
+            "id" => $this->getId(),
             "username" => $this->getUsername(),
             "email" => $this->getEmail()
         ];
-    }
-
-    /**
-     * @param CreateUserDTO $dto
-     * @return static
-     */
-    public static function buildFromDTO(CreateUserDTO $dto): self
-    {
-        $user = new self();
-        $user->setEmail($dto->getEmail());
-        $user->setPassword($dto->getPassword());
-        $user->setUsername($dto->getUsername());
-
-        return $user;
     }
 }

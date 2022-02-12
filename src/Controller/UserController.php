@@ -2,80 +2,79 @@
 
 namespace App\Controller;
 
-use App\Entity\DTO\CreateUserDTO;
-use App\Entity\User;
-use App\Repository\UserRepository;
-use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Controller\Validator\CreateUserValidator;
+use App\Controller\Validator\UpdateUserValidator;
+use App\Exception\CreateUserException;
+use App\Exception\UpdateUserException;
+use App\Service\UserServiceInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use UnexpectedValueException;
 
 class UserController extends AbstractController
 {
     /**
+     * @var UserServiceInterface
+     */
+    private $userService;
+
+    public function __construct(UserServiceInterface $userService)
+    {
+        $this->userService = $userService;
+    }
+
+    /**
      * @Route("/api/users", name="users", methods={"GET"})
      */
-    public function getUsers(UserRepository $userRepository): JsonResponse
+    public function getUsers(): JsonResponse
     {
         return $this->json(
-            $userRepository->findAll()
+            $this->userService->findAll()
         );
     }
 
     /**
      * @Route("/api/users", name="users_add", methods={"POST"})
      */
-    public function addUser(
-        Request $request,
-        ValidatorInterface $validator,
-        EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
-    ): JsonResponse
+    public function addUser(Request $request, CreateUserValidator $validator): JsonResponse
     {
         try {
-            $encoders = [new JsonEncoder()];
-            $normalizers = [new ObjectNormalizer()];
+            $userDTO = $validator->deserialize($request);
+            $validator->validate($userDTO);
 
-            $serializer = new Serializer($normalizers, $encoders);
-
-            /** @var CreateUserDTO $userDTO */
-            $userDTO = $serializer->deserialize(
-                $request->getContent(),
-                CreateUserDTO::class,
-                'json',
-                []
-            );
-        } catch (UnexpectedValueException $e) {
-            return $this->json('Invalid JSON', 422);
-        }
-
-        $errors = $validator->validate($userDTO);
-        if ($errors->count()) {
-            return $this->json(['error' => $errors[0]->getMessage()], 422);
-        }
-
-        try {
-            $user = User::buildFromDTO($userDTO);
-            $hashedPassword = $passwordHasher->hashPassword(
-                $user,
-                $userDTO->getPassword()
-            );
-            $user->setPassword($hashedPassword);
-
-            $em->persist($user);
-            $em->flush();
-        } catch (UniqueConstraintViolationException $e) {
-            return $this->json('User already exists', 409);
+            $this->userService->create($userDTO);
+        } catch (CreateUserException $e) {
+            return $this->json($e->getMessage(), $e->getCode());
         }
 
         return $this->json('User successfully created');
+    }
+
+    /**
+     * @Route("/api/users/{id}", name="users_patch", methods={"PATCH"}, requirements={"id"="\d+"})
+     */
+    public function updateUser(Request $request, UpdateUserValidator $validator, int $id): JsonResponse
+    {
+        try {
+            $userDTO = $validator->deserialize($request, $id);
+            $validator->validate($userDTO);
+
+            $this->userService->update($userDTO);
+        } catch (UpdateUserException $e) {
+            return $this->json($e->getMessage(), $e->getCode());
+        }
+
+        return $this->json('User updated successfully');
+    }
+
+    /**
+     * @Route("/api/users/search", name="users_search", methods={"GET"})
+     */
+    public function searchUsers(Request $request): JsonResponse
+    {
+        return $this->json(
+            $this->userService->findAll()
+        );
     }
 }
