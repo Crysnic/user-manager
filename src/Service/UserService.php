@@ -115,20 +115,20 @@ class UserService implements UserServiceInterface
      */
     public function search(SearchUserDTO $dto): array
     {
-        if ($dto->getEmail() !== null) {
-            $user = $this->userRepository->findOneByEmail($dto->getEmail());
+        if ($dto->getParameter() === SearchUserDTO::EMAIL) {
+            $user = $this->userRepository->findOneByEmail($dto->getValue());
             if ($user === null) {
                 throw new SearchUserException('User not found', 404);
             }
             return [$user];
-        } elseif ($dto->getUsername() !== null) {
-            $users = $this->userRepository->findByUsername($dto->getUsername());
+        } elseif ($dto->getParameter() === SearchUserDTO::USERNAME) {
+            $users = $this->userRepository->findByUsername($dto->getValue());
             if (empty($users)) {
                 throw new SearchUserException('Users not found', 404);
             }
             return $users;
         } else {
-            throw new SearchUserException('Criteria for search not found', 404);
+            throw new SearchUserException('Not supported param for search', 400);
         }
     }
 }

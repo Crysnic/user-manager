@@ -71,7 +71,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/api/users/search", name="users_search", methods={"GET"})
+     * @Route("/api/users/parameter/{parameter}/value/{value}", name="users_search", methods={"GET"})
      */
     public function searchUsers(Request $request, SearchUserValidator $validator): JsonResponse
     {

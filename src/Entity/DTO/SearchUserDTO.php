@@ -8,55 +8,70 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class SearchUserDTO
 {
+    const USERNAME = 'username';
+    const EMAIL = 'email';
+    const PARAMETERS = [self::USERNAME, self::EMAIL];
+
     /**
-     * @Assert\NotBlank(allowNull="true", message="username - required field")
-     * @Assert\Regex(pattern="/^[a-zA-Z_ ]+$/", message="Your username must contain only latin characters")
+     * @Assert\NotBlank(message="parameter - required")
+     * @Assert\Choice(choices=SearchUserDTO::PARAMETERS, message="parameter can be only username or email")
+     *
+     * @var string
+     */
+    private $parameter;
+
+    /**
+     * @Assert\NotBlank(message="value - required field")
+     *
+     * @Assert\Email(message="The value must contain valid email address", groups={SearchUserDTO::EMAIL})
+     *
+     * @Assert\Type(type="string", message="value must be a {{ type }}", groups={SearchUserDTO::USERNAME})
      * @Assert\Length(
-     *      min = 3,
-     *      minMessage = "Your username must be at least {{ limit }} charactes long"
+     *      min = 6,
+     *      max = 24,
+     *      minMessage = "Your value param should contain username with at least {{ limit }} charactes long",
+     *      maxMessage = "Your value param should contain username that cannot be longer than {{ limit }} charactes",
+     *      groups={SearchUserDTO::USERNAME}
+     * )
+     * @Assert\Regex(
+     *     pattern="/^[a-zA-Z_ ]+$/",
+     *     message="Your username must contain only latin characters",
+     *     groups={SearchUserDTO::USERNAME}
      * )
      *
-     * @var string|null
+     * @var string
      */
-    private $username;
+    private $value;
 
     /**
-     * @Assert\NotBlank(allowNull="true", message="email - required field")
-     * @Assert\Email(message="The email <{{ value }}> is not a valid")
-     *
-     * @var string|null
+     * @return string
      */
-    private $email;
-
-    /**
-     * @return string|null
-     */
-    public function getUsername(): ?string
+    public function getParameter(): string
     {
-        return $this->username;
+        return $this->parameter;
     }
 
     /**
-     * @param string|null $username
+     * @param string $parameter
      */
-    public function setUsername(?string $username): void
+    public function setParameter(string $parameter): void
     {
-        $this->username = $username;
+        $this->parameter = $parameter;
     }
 
     /**
-     * @return string|null
+     * @return string
      */
-    public function getEmail(): ?string
+    public function getValue(): string
     {
-        return $this->email;
+        return $this->value;
     }
 
     /**
-     * @param string|null $email
+     * @param string $value
      */
-    public function setEmail(?string $email): void
+    public function setValue(string $value): void
     {
-        $this->email = $email;
+        $this->value = $value;
     }
 }
