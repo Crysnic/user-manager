@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-class SearchUserException extends ApiException
+class ApiException extends \Exception
 {
 
 }

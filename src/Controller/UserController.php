@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\API\ApiResponseGenerator;
 use App\Exception\CreateUserException;
 use App\Exception\SearchUserException;
 use App\Exception\UpdateUserException;
@@ -31,9 +32,12 @@ class UserController extends AbstractController
      */
     public function getUsers(): JsonResponse
     {
-        return $this->json(
-            $this->userService->findAll()
-        );
+        try {
+            $users = $this->userService->findAll();
+            return (new ApiResponseGenerator())->buildFromUsers($users);
+        } catch (SearchUserException $e) {
+            return (new ApiResponseGenerator())->buildFromApiException($e);
+        }
     }
 
     /**
@@ -47,10 +51,10 @@ class UserController extends AbstractController
 
             $this->userService->create($userDTO);
         } catch (CreateUserException $e) {
-            return $this->json($e->getMessage(), $e->getCode());
+            return (new ApiResponseGenerator())->buildFromApiException($e);
         }
 
-        return $this->json('User successfully created');
+        return (new ApiResponseGenerator())->build(200, 'User successfully created');
     }
 
     /**
@@ -64,10 +68,10 @@ class UserController extends AbstractController
 
             $this->userService->update($dto);
         } catch (UpdateUserException $e) {
-            return $this->json($e->getMessage(), $e->getCode());
+            return (new ApiResponseGenerator())->buildFromApiException($e);
         }
 
-        return $this->json('User updated successfully');
+        return (new ApiResponseGenerator())->build(200, 'User updated successfully');
     }
 
     /**
@@ -79,11 +83,10 @@ class UserController extends AbstractController
             $searchDTO = $validator->deserialize($request);
             $validator->validate($searchDTO);
 
-            return $this->json(
-                $this->userService->search($searchDTO)
-            );
+            $users = $this->userService->search($searchDTO);
+            return (new ApiResponseGenerator())->buildFromUsers($users);
         } catch (SearchUserException $e) {
-            return $this->json($e->getMessage(), $e->getCode());
+            return (new ApiResponseGenerator())->buildFromApiException($e);
         }
     }
 }

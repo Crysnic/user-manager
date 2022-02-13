@@ -38,10 +38,15 @@ class UserService implements UserServiceInterface
 
     /**
      * @return array|User[]
+     * @throws SearchUserException
      */
     public function findAll(): array
     {
-        return $this->userRepository->findAll();
+        $users = $this->userRepository->findAll();
+        if (empty($users)) {
+            throw new SearchUserException('Users list is empty', 404);
+        }
+        return $users;
     }
 
     /**

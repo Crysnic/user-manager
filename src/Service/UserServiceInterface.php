@@ -16,6 +16,7 @@ interface UserServiceInterface
 {
     /**
      * @return User[]
+     * @throws SearchUserException
      */
     public function findAll(): array;
 
