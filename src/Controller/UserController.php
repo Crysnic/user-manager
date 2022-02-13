@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
-use App\Controller\Validator\CreateUserValidator;
-use App\Controller\Validator\SearchUserValidator;
-use App\Controller\Validator\UpdateUserValidator;
 use App\Exception\CreateUserException;
 use App\Exception\SearchUserException;
 use App\Exception\UpdateUserException;
 use App\Service\UserServiceInterface;
+use App\Validator\CreateUserValidator;
+use App\Validator\SearchUserValidator;
+use App\Validator\UpdateUserValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

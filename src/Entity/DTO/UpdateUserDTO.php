@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraints as AppAssert;
 
 class UpdateUserDTO
 {
@@ -25,20 +26,7 @@ class UpdateUserDTO
     private $username;
 
     /**
-     * @Assert\NotBlank(message="password - required field", groups={"password_changing"})
-     * @Assert\Type(type="string", message="password must be a {{ type }}", groups={"password_changing"})
-     * @Assert\Length(
-     *      min = 8,
-     *      max = 12,
-     *      minMessage = "Your password must be at least {{ limit }} symbols long",
-     *      maxMessage = "Your password cannot be longer than {{ limit }} symbols",
-     *     groups={"password_changing"}
-     * )
-     * @Assert\Regex(pattern="/\d/", message="Your password must contain at least one number", groups={"password_changing"})
-     * @Assert\Regex(pattern="/[!$_\&\*~\^]/", message="Your password must contain at least one of !$_*~^", groups={"password_changing"})
-     * @Assert\Regex(pattern="/[a-z]/", message="Your password must contain at least one letter in lower case", groups={"password_changing"})
-     * @Assert\Regex(pattern="/[A-Z]/", message="Your password must contain at least one letter in upper case", groups={"password_changing"})
-     * @Assert\Regex(pattern="/^[A-Za-z0-9!$_\&\*~\^]+$/", message="Your password must contain only letters, numbers and !$_*~^", groups={"password_changing"})
+     * @AppAssert\PasswordRequirements(groups={"password_changing"})
      *
      * @var string
      */

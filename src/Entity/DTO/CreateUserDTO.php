@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Entity\DTO;
 
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraints as AppAssert;
 
 class CreateUserDTO
 {
@@ -32,19 +33,7 @@ class CreateUserDTO
     private $username;
 
     /**
-     * @Assert\NotBlank(message="password - required field")
-     * @Assert\Type(type="string", message="password must be a {{ type }}")
-     * @Assert\Length(
-     *      min = 8,
-     *      max = 12,
-     *      minMessage = "Your password must be at least {{ limit }} symbols long",
-     *      maxMessage = "Your password cannot be longer than {{ limit }} symbols"
-     * )
-     * @Assert\Regex(pattern="/\d/", message="Your password must contain at least one number")
-     * @Assert\Regex(pattern="/[!$_\&\*~\^]/", message="Your password must contain at least one of !$_*~^")
-     * @Assert\Regex(pattern="/[a-z]/", message="Your password must contain at least one letter in lower case")
-     * @Assert\Regex(pattern="/[A-Z]/", message="Your password must contain at least one letter in upper case")
-     * @Assert\Regex(pattern="/^[A-Za-z0-9!$_\&\*~\^]+$/", message="Your password must contain only letters, numbers and !$_*~^")
+     * @AppAssert\PasswordRequirements()
      *
      * @var string
      */

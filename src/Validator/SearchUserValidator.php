@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Validator;
+namespace App\Validator;
 
 use App\Entity\DTO\SearchUserDTO;
 use App\Exception\SearchUserException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class SearchUserValidator
 {

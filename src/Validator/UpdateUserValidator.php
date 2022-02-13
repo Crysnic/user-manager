@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Controller\Validator;
+namespace App\Validator;
 
 use App\Entity\DTO\UpdateUserDTO;
 use App\Exception\UpdateUserException;

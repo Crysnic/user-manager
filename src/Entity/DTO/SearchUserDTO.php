@@ -27,9 +27,9 @@ class SearchUserDTO
      *
      * @Assert\Type(type="string", message="value must be a {{ type }}", groups={SearchUserDTO::USERNAME})
      * @Assert\Length(
-     *      min = 6,
+     *      min = 3,
      *      max = 24,
-     *      minMessage = "Your value param should contain username with at least {{ limit }} charactes long",
+     *      minMessage = "Your value param should contain part of username with at least {{ limit }} charactes long",
      *      maxMessage = "Your value param should contain username that cannot be longer than {{ limit }} charactes",
      *      groups={SearchUserDTO::USERNAME}
      * )
